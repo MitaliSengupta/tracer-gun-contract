@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="theme-color" content="#000000">
+	<link rel="shortcut icon" href="assets/favicon.ico">
+	<link rel="stylesheet" href="assets/styles/main.css">
+	<title>Tracer :: Blockchain based Assets Management Platform</title>
+</head>
+
+<body>
+	<noscript>
+	You need to enable JavaScript to run this app.
+	</noscript>
+
+	<header class="app-main-header">
+
+		<h1 class="column" title="Solidity based Assets Management Platform">
+			<a id="app-main-nav-button" href="#"></a>
+			<span>Tracer</span>
+		</h1>
+
+		<div class="column">
+			<a class="github-badge" target="_blank" title="See more on GitHub" href="//github.com/set808/tracer">
+				<img src="assets/svg/github.svg" alt="Github logo">
+			</a>
+		</div>
+	</header>
+
+	<main class="wrapper">
+		<div class='dynamic-block'>
+			<div id="createasset">
+				<h2>Create An Asset</h2>
+				<button type="button" id="AssetCreate" name="AssetCreate" formtarget="_self">Create Asset</button><br><br>
+				<div class="input-form">
+					<input type="text" id="AssetType" name="AssetType" placeholder="Enter the type">
+				</div>
+				<div class="input-form">
+					<input type="text" id="AssetMan" name="AssetMan" placeholder="Enter the manufacturer">
+				</div>
+				<div class="input-form">
+					<input type="text" id="Init" name="Init" placeholder="Initialized: T or F?">
+				</div>
+				<br>
+				<br>
+				<div class="input-form">
+					<h3 id="AssetUUID">UUID</h3>
+				</div>
+				<br>
+
+			</div>
+			<br>
+			<div id="createmanufacturer">
+				<h2>Create An Entity</h2>
+				<div class="input-form">
+					<input type="text" id="ManName" name="ManName" placeholder="Enter the name">
+				</div>
+				<div class="input-form">
+					<input type="text" id="ManFFL" name="ManFFL" placeholder="Enter the FFL">
+				</div>
+				<br><br>
+
+				<button type="button" id="CreateMan" name="CreateMan" formtarget="_self">Create Manufacturer</button>
+				<div class="input-form">
+					<input type="text" id="ManAddr" name="ManAddr" placeholder="Manufacturer Address">
+				</div>
+				<br><br>
+			</div>
+			<div id="createdealer">
+				<div class="input-form">
+					<input type="text" id="DealName" name="DealName" placeholder="Enter the name">
+				</div>
+				<div class="input-form">
+					<input type="text" id="DealFFL" name="DealFFL" placeholder="Enter the FFL">
+				</div>
+				<br><br>
+
+				<button type="button" id="CreateDeal" name="CreateDeal" formtarget="_self">Create Dealer</button>
+				<div class="input-form">
+					<input type="text" id="DealerAddr" name="DealerAddr" placeholder="Dealer Address">
+				</div>
+				<br><br>
+			</div>
+			<div id="createowner">
+				<div class="input-form">
+					<input type="text" id="OwnerName" name="OwnerName" placeholder="Enter the name">
+				</div>
+				<div class="input-form">
+					<input type="text" id="OwnerAge" name="OwnerAge" placeholder="Enter the age">
+				</div>
+				<br><br>
+				<button type="button" id="CreateOwner" name="CreateOwner" formtarget="_self">Create Owner</button>
+				<div class="input-form">
+					<input type="text" id="OwnerAddr" name="OwnerAddr" placeholder="Owner Address">
+				</div>
+				<br><br>
+			</div>
+			<br>
+			<div id="transferasset">
+				<h2>Transfer An Asset</h2>
+				<button type="button" id="TransferAsset" name="TransferAsset" formtarget="_self">Transfer Asset</button><br><br>
+				<div class="input-form">
+					<input type="text" id="TransferAssUUID" placeholder="Enter asset UUID" name="AssetTransferUUID">
+				</div>
+				<div class="input-form">
+					<input type="text" id="TransferFrom" placeholder="Enter where from" name="FromField">
+				</div>
+				<div class="input-form">
+					<input type="text" id="TransferTo" placeholder="Enter where to" name="ToField">
+				</div>
+				<br><br>
+				<div class="input-form">
+					<h3 id="TransferSuccess">Displays success or failure of transfer.</h3>
+					<!-- <textarea name="myTextarea" id="TransferSuccess" placeholder="Displays success or failure of transfer." cols="15" rows="5" required></textarea> -->
+				</div>
+				<br>
+			</div>
+			<br>
+			<div id="displayhistory">
+				<h2>Display Asset History</h2>
+				<button type="button" id="DispHist" name="DispHist" formtarget="_self">Display History</button><br><br>
+				<div class="input-form">
+					<input type="text" id="AssetUUID" name="AssetUUID" placeholder="Enter the UUID">
+				</div>
+				<br><br>
+				<div class="input-form">
+					<h3 id="">Displays history.</h3>
+					<!-- <textarea id="HistoryArea" name="HistoryArea" placeholder="Displays history." cols="30" rows="15"></textarea> -->
+				</div>
+				<br>
+			</div>
+		</div>
+	</main>
+
+	<div id="magnet-overlay"></div>
+
+	<script src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+	<script type="text/javascript" src="//rawgit.com/set808/tracer/master/web3.min.js"></script>
+	<script>
+		$(function() {
+			if (typeof web3 !== 'undefined') {
+				web3 = new Web3(web3.currentProvider);
+			} else {
+				web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+			}
+		
+		                var app = {
+				UUID: null
+			}
+
+			web3.eth.defaultAccount = web3.eth.accounts[0];
+
+			fetch("https://raw.githubusercontent.com/set808/tracer/master/assets/js/abi.json")
+				.then((resp) => resp.json())
+				.then(function(data) {
+					var InitializeTracer = web3.eth.contract(data);
+
+					var newTracer = InitializeTracer.at("0x534be40e669034fdcb5bcd9bcc84b80cc50a65f5", function(err){console.log(err);});
+
+					console.log(newTracer);
+
+					$("#CreateMan").click(function() {
+						newTracer.createManufacturer($("#ManName").val(), $("#ManFFL").val());
+						$("#ManAddr").attr("placeholder") = newTracer.getManufacturerAddress;
+					});
+
+					$("#CreateDeal").click(function() {
+						newTracer.createDealer($("#DealName").val(), $("#DealFFL").val());
+						$("#DealerAddr").attr("placeholder") = newTracer.getDealerAddress;
+					});
+
+					$("#CreateOwner").click(function() {
+						newTracer.createOwner($("#OwnerName").val(), $("#OwnerAge").val());
+						$("#OwnerAddr").attr("placeholder") = newTracer.getOwnerAddress;
+					});
+
+					$("#AssetCreate").click(function() {
+						var assetType = $("#AssetType").val();
+						var assetMan = $("#AssetMan").val();
+						var init = $("#Init").val();
+		                                console.log(assetID);
+                                   		var assetID = newTracer.createAsset(assetType, assetMan, init);
+						// var assetID = "ololo";
+						console.log(assetID);
+
+						// $("#AssetUUID").attr("placeholder", assetID);
+						app.UUID = assetID;
+						$("#AssetUUID").html(assetID);
+					});
+
+					$("#TransferAsset").click(function() {
+						newTracer.transferAsset($("#TransferTo").val(), $("#TransferAssUUID").val());
+						$("#TransferSuccess").attr("placeholder") = "Transfer of asset complete"
+					});
+				})
+		});
+	</script>
+</body>
+
+</html>
